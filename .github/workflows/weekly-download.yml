@@ -1,0 +1,42 @@
+name: Weekly New Files From Folder
+
+on:
+  schedule:
+    - cron: '0 21 * * 6'   # 每周六 22:00（德国夏令时）
+  workflow_dispatch:
+
+jobs:
+  download-new-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        run: |
+          git clone https://github.com/Monkfishare/The_Economist.git repo
+
+      - name: Find new files in last 7 days (only in target folder)
+        run: |
+          cd repo
+
+          # 🔴 改这里：你关心的文件夹路径（相对于 repo 根目录）
+          TARGET_DIR="tree/main/TE/2026"
+
+          git log --since="7 days ago" --name-status --pretty=format: \
+          | awk '$1=="A" {print $2}' \
+          | grep "^${TARGET_DIR}/" \
+          | sort -u > ../new_files.txt
+
+      - name: Collect new files
+        run: |
+          mkdir -p output
+          while read file; do
+            mkdir -p output/$(dirname "$file")
+            cp "repo/$file" "output/$file"
+          done < new_files.txt
+
+          zip -r new_files_last_week.zip output
+
+      - name: Upload zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: new-files-from-folder
+          path: new_files_last_week.zip
