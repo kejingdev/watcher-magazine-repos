@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Clone repo
         run: |
-          git clone --depth=5 https://github.com/Monkfishare/The_Economist.git repo
+          git clone https://github.com/Monkfishare/The_Economist.git repo
 
       - name: Find new files in last 7 days (only in target folder)
         run: |
