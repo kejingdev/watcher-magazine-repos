@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Clone repo
         run: |
-          git clone https://github.com/Monkfishare/The_Economist.git repo
+          git clone --depth=5 https://github.com/Monkfishare/The_Economist.git repo
 
       - name: Find new files in last 7 days (only in target folder)
         run: |
@@ -27,6 +27,11 @@ jobs:
 
       - name: Collect new files
         run: |
+          if [ ! -s new_files.txt ]; then
+            echo "No new files in the last 7 days. Exiting."
+            exit 0
+          fi
+
           mkdir -p output
           while read file; do
             mkdir -p output/$(dirname "$file")
@@ -34,6 +39,7 @@ jobs:
           done < new_files.txt
 
           zip -r new_files_last_week.zip output
+
 
       - name: Upload zip
         uses: actions/upload-artifact@v4
