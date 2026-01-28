@@ -18,7 +18,7 @@ jobs:
           cd repo
 
           # 🔴 改这里：你关心的文件夹路径（相对于 repo 根目录）
-          TARGET_DIR="tree/main/TE/2026"
+          TARGET_DIR="TE/2026"
 
           git log --since="7 days ago" --name-status --pretty=format: \
           | awk '$1=="A" {print $2}' \
